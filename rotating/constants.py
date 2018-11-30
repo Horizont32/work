@@ -1,6 +1,9 @@
-data_path = 'C:/Users/Artem/YandexDisk/Programming/work/rotating/img2'
+import os
+
+path = os.getcwd()
+data_path = os.path.join(path, 'img2')
 imsize = 300
-ext_path = 'C:/Users/Artem/YandexDisk/Programming/work/rotating/edited/'
+ext_path = os.path.join(path, 'edited')
 file_ext = '.jpg'
 default_scale_factor = 3
 scale_factor = 1  # Default scale_factor is 3, that`s why we devide it in 3

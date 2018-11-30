@@ -6,9 +6,9 @@ import constants
 import func
 import matplotlib.pyplot as plt
 
-os.chdir(constants.data_path)
 files = os.listdir(constants.data_path)
 func.ensure_dir(constants.ext_path, constants.data_path)
+os.chdir(os.path.join(os.getcwd(), 'img2'))
 kek = 1
 num = 1
 blocksize = 33*constants.default_scale_factor/constants.scale_factor  # blocksize/C is 21/15, 9/7 is good
