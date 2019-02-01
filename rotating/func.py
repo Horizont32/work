@@ -8,12 +8,10 @@ kek = 1
 
 
 def ensure_dir(ext_path, data_path):
-    dir_data = os.path.dirname(ext_path)
-    dir_dest = os.path.dirname(data_path)
-    if not os.path.exists(dir_data):
-        os.makedirs(dir_data)
-    if not os.path.exists(dir_dest):
-        os.makedirs(dir_dest)
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
+    if not os.path.exists(ext_path):
+        os.makedirs(ext_path)
 
 
 def scale(rad_in_mm, rad_in_px):
@@ -33,20 +31,30 @@ def dist_between_marks_mm_to_pix(dist_in_mm, scale):
 
 
 def find_main_center(edited_image, minRad, maxRad):
-    circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, 100,
-                            param1=20, param2=10, minRadius=minRad, maxRadius=maxRad)[0][0] # Находим окружность с центром (главным центром)
+    circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, 10000,
+                            param1=20, param2=2, minRadius=minRad, maxRadius=maxRad)[0][0] # Находим окружность с
+    # центром (главным центром
+    # param1=20, param2=2
     return circ
 
 
 def find_big_circle_center(edited_image, minRad, maxRad):
-    circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, 100,
-                            param1=20, param2=2, minRadius=minRad, maxRadius=maxRad)[0][0] # Находим окружность с центром (главным центром)
+    circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, 10000,
+                            param1=20, param2=2, minRadius=minRad, maxRadius=maxRad)[0][0] # Находим окружность с
+    # центром (главным центром). Defaults: param1 = 20, param2=2
     return circ
+
+
+def define_real_center(main_circ, big_circ):
+    x_cent_real = (main_circ[0] + big_circ[0]) / 2
+    y_cent_real = (main_circ[1] + big_circ[1]) / 2
+    return x_cent_real, y_cent_real
 
 
 def find_mark_cent(edited_image, minRad, maxRad, min_dist_px):
     circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, minDist=min_dist_px,
-                            param1=30, param2=15, minRadius=minRad, maxRadius=maxRad)[0]  # Находим окружность с центром маркера
+                            param1=30, param2=15, minRadius=minRad, maxRadius=maxRad)[0]  # Находим окружность с
+    # центром маркера: default param1=30, param2=15
     return circ
 
 
@@ -84,9 +92,9 @@ def check_rad(array_of_points_rads_in_origin, array_rad_exist_point):
 
 def check_varC(array_rad_exist_point, varC, number_of_points):
     if len(array_rad_exist_point) < number_of_points:
-        varC -= 1
+        varC -= 0.5
     elif len(array_rad_exist_point) > number_of_points:
-        varC += 1
+        varC += 0.5
     return varC
 
 
