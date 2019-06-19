@@ -29,24 +29,30 @@ class VideoDecode:
         self.fps = video.get(cv2.CAP_PROP_FPS)
         workbook = xlsxwriter.Workbook(self.data_path + 'data.xlsx')
         file_list = workbook.add_worksheet()
-        file_list.write('A1', 'Image_Name', workbook.add_format({'bold': True}))
+        file_list.write('A1',
+
+                        'Image_Name', workbook.add_format({'bold': True}))
         file_list.write('B1', 'Frame_№', workbook.add_format({'bold': True}))
         file_list.write('C1', 'Time, ms', workbook.add_format({'bold': True}))
         row = 1
         col = 0
+        resolut_x = 512
+        resolut_y = 512
         while ret:
             ret, frame = video.read()
             if not num % self.every_nth:
+                shape = frame.shape
+                frame = frame[shape[0]-resolut_x:shape[0], int(shape[1]/2 - resolut_y/2):int(shape[1]/2 + resolut_y/2)]  #Image resize if needed
                 cv2.imwrite(self.ext_path + '/%010d' % num + self.file_ext, frame)
                 file_list.write(row, col, '%010d' % num + self.file_ext)
                 file_list.write(row, col + 1, float('%010d' % num))
                 file_list.write(row, col + 2, 1000 / self.fps * float('%010d' % num))
                 row += 1
-            # print('Recording frame No ', num)
+            print('Recording frame No ', num)
             num += 1
         workbook.close()
 
 
-Vid = VideoDecode('F:/DIC/DimSap/DIC_metal/', '00201.mp4', 'edited201/', '.jpg', 20)
+Vid = VideoDecode('D:/DIC_tests/4048_Saturn_videos/', 'shotr_boom.avi', 'boom/', '.jpg', 1)
 Vid.ensure_dir()
 Vid.get_write()

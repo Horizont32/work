@@ -20,8 +20,8 @@ def scale(rad_in_mm, rad_in_px):
 
 def marker_rad_in_px(mark_dia_in_mm, scale):
     rad_pix = mark_dia_in_mm * scale/2
-    minrad_pix = round(int(rad_pix*0.95))
-    maxrad_pix = round(int(rad_pix*1.4))
+    minrad_pix = round(int(rad_pix*0.65))
+    maxrad_pix = round(int(rad_pix*1.2))
     return minrad_pix, maxrad_pix, rad_pix
 
 
@@ -33,6 +33,14 @@ def dist_between_marks_mm_to_pix(dist_in_mm, scale):
 def find_main_center(edited_image, minRad, maxRad):
     circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, 10000,
                             param1=20, param2=2, minRadius=minRad, maxRadius=maxRad)[0][0] # Находим окружность с
+    # центром (главным центром
+    # param1=20, param2=2
+    return circ
+
+
+def find_main_helping_center(edited_image, minRad, maxRad, p1, p2, SupRes):
+    circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, SupRes, 10000,
+                            param1=p1, param2=p2, minRadius=minRad, maxRadius=maxRad)[0][0] # Находим окружность с
     # центром (главным центром
     # param1=20, param2=2
     return circ
@@ -53,8 +61,8 @@ def define_real_center(main_circ, big_circ):
 
 def find_mark_cent(edited_image, minRad, maxRad, min_dist_px):
     circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, minDist=min_dist_px,
-                            param1=30, param2=15, minRadius=minRad, maxRadius=maxRad)[0]  # Находим окружность с
-    # центром маркера: default param1=30, param2=15
+                            param1=100, param2=13, minRadius=minRad, maxRadius=maxRad)[0]  # Находим окружность с
+    # центром маркера: default param1=30, param2=15, superres was 2, p1 = 30, p2 =11, detects ok
     return circ
 
 
@@ -129,9 +137,37 @@ def check_rotation_angle(angle_of_point_origin, angle_of_point_exist_image):
 
 def rotate(src, cent_array, rot_angle, shape):
     M = cv2.getRotationMatrix2D((cent_array[0], cent_array[1]), rot_angle, 1)
-    rot_img = cv2.warpAffine(src, M, (shape[1], shape[0]), flags=cv2.INTER_NEAREST)
+    rot_img = cv2.warpAffine(src, M, (shape[1], shape[0]), flags=cv2.INTER_LANCZOS4)
     return rot_img
 
+
+def cut_image(img, exist_round_array, offset):
+    print(int((exist_round_array[0] - exist_round_array[2] - offset)),int((exist_round_array[0]) + exist_round_array[2]+ offset))
+    x1 = int((exist_round_array[0] - exist_round_array[2] - offset))
+    y1 = int((exist_round_array[1] - exist_round_array[2] - offset))
+    new_img = img[int((exist_round_array[1] - exist_round_array[2] - offset)):int((exist_round_array[1]) + exist_round_array[2]+ offset), int((exist_round_array[0] - exist_round_array[2] - offset)):int(exist_round_array[0] + exist_round_array[2] + offset)]
+    print(new_img.shape, x1,y1)
+    cv2.imshow('cut_img', new_img)
+    cv2.waitKey(0)
+    return new_img, (x1, y1)
+
+
+def find_real_center_on_cut_img(src_img, minRad, maxRad, blocksize, varC):
+    blured_img = cv2.medianBlur(src_img, 5)
+    thresholded_img = cv2.Canny(blured_img, 100, 200)
+    # thresholded_img = cv2.adaptiveThreshold(blured_img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    #                       cv2.THRESH_BINARY, math.ceil(blocksize), varC)
+    real_cent = find_main_helping_center(thresholded_img, minRad, maxRad, p1=20, p2=7, SupRes=3)
+    draw_circle_and_center(thresholded_img, real_cent, [[0, 0, 0]])
+    cv2.imshow('drawn', thresholded_img)
+    cv2.waitKey(0)
+    return real_cent
+
+
+def iterated_center(edge_coords_cut_img, center_cut_img):
+    xcent = edge_coords_cut_img[0] + center_cut_img[0]
+    ycent = edge_coords_cut_img[1] + center_cut_img[1]
+    return xcent, ycent
 
 def shift_center(src, main_cent_origin, main_cent_current, shape):
     dx = main_cent_origin[0] - main_cent_current[0]

@@ -5,16 +5,25 @@ import scipy.interpolate as int
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
-x = [5, 10, 85, 89]
-y = [-7, 5, 6, 19]
-g = [13, 3, -5, 4]
 
-inted = int.interp1d(x, y, kind='cubic', fill_value='extrapolate')
-inted2 = int.interp1d(x, g, kind='cubic', fill_value='extrapolate')
+
+
+
+D17 = [3.4, 3.56, 3.66, 3.75]
+D4 = [1.57, 1.7, 1.93, 2.08]
+D8 = [1.61, 1.71, 1.89, 2.01]
+R17 = [234.66, 248.1, 260.9, 295]
+R4 = [230.6, 260.9, 289.8, 301]
+R8 = [236.7, 267.32, 289.8, 303]
+
+inted17 = int.interp1d(R17, D17, kind='cubic', fill_value='extrapolate')
+inted4 = int.interp1d(R4, D4, kind='cubic', fill_value='extrapolate')
+inted8 = int.interp1d(R8, D8, kind='cubic', fill_value='extrapolate')
 
 
 def findIntersection(fun1, fun2, x0):
     return fsolve(lambda kek: fun1(kek) - fun2(kek), x0)
+
 
 
 result = findIntersection(inted,numpy.cos,0.0)
