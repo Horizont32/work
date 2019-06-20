@@ -53,6 +53,6 @@ class VideoDecode:
         workbook.close()
 
 
-Vid = VideoDecode('D:/DIC_tests/4048_Saturn_videos/', 'shotr_boom.avi', 'boom/', '.jpg', 1)
+Vid = VideoDecode('D:/DIC_tests/4048_Saturn_videos/', '29500_light.avi', 'edited29500-light/', '.jpg', 1)
 Vid.ensure_dir()
 Vid.get_write()

@@ -82,7 +82,7 @@ for file in files:
         # print(max_mark_rad_px, blocksize)
         mindist_px = int(constants.dist_marks_mm * scale_pix_in_mm)
         # mark_arr = func.find_mark_cent(cimg, round(constants.minMarkRad), round(constants.maxMarkRad))
-        mark_arr = func.find_mark_cent(cimg, min_mark_rad_px, max_mark_rad_px, mindist_px)
+        mark_arr = func.find_mark_cent(cimg, min_mark_rad_px, max_mark_rad_px, mindist_px) #from THAT MOMENT cimg was replaced by cut_img
         main_rads = func.mark_cent_rad_calc(mark_arr, real_center)
         print('Radiusy raspologenia tochek ' + str(main_rads))
         main_mark_angles = func.mark_angle_calc(mark_arr, real_center)

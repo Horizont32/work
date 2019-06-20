@@ -20,7 +20,7 @@ def scale(rad_in_mm, rad_in_px):
 
 def marker_rad_in_px(mark_dia_in_mm, scale):
     rad_pix = mark_dia_in_mm * scale/2
-    minrad_pix = round(int(rad_pix*0.65))
+    minrad_pix = round(int(rad_pix*0.75))
     maxrad_pix = round(int(rad_pix*1.2))
     return minrad_pix, maxrad_pix, rad_pix
 
@@ -61,7 +61,7 @@ def define_real_center(main_circ, big_circ):
 
 def find_mark_cent(edited_image, minRad, maxRad, min_dist_px):
     circ = cv2.HoughCircles(edited_image, cv2.HOUGH_GRADIENT, 1, minDist=min_dist_px,
-                            param1=100, param2=13, minRadius=minRad, maxRadius=maxRad)[0]  # Находим окружность с
+                            param1=100, param2=11, minRadius=minRad, maxRadius=maxRad)[0]  # Находим окружность с
     # центром маркера: default param1=30, param2=15, superres was 2, p1 = 30, p2 =11, detects ok
     return circ
 
